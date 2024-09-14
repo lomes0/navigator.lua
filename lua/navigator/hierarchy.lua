@@ -175,6 +175,8 @@ local function expand_item(args)
   local items = args.items
   local parent_node = args.parent_node
   local section_id = args.section_id or 1
+  local win = vim.api.nvim_get_current_win()
+  local pos = vim.api.nvim_win_get_cursor(win)
 
   local sect
   local sectid = 1
@@ -191,6 +193,10 @@ local function expand_item(args)
         items[j].indent_level = parent_node.indent_level + 1
         table.insert(sect.nodes, i + j, args.items[j])
       end
+      for j in ipairs(items) do
+	    pos[1] = pos[1] + 1
+        break
+      end
       sect.nodes[i].expanded = true
       sect.nodes[i].expandable = false
       break
@@ -199,6 +205,7 @@ local function expand_item(args)
   trace(panel.sections[sectid])
   -- render the panel again
   panel:redraw(false)
+  vim.api.nvim_win_set_cursor(win, pos)
 end
 
 incoming_calls_handler = util.partial4(
